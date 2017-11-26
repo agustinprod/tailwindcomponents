@@ -1,0 +1,66 @@
+version: '2'
+services:
+  app:
+    image: killgt/http
+    volumes:
+     - .:/var/www/html
+    ports:
+     - "9000:80"
+    networks:
+     - sdnet
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "9001:3306"
+    volumes:
+     - mysqldata:/var/lib/mysql
+    networks:
+     - sdnet
+  redis:
+    image: redis:alpine
+    volumes:
+     - redisdata:/data
+    networks:
+     - sdnet
+    ports:
+      - "9002:6379"
+  ngrok:
+    image: wernight/ngrok
+    environment:
+      NGROK_AUTH: ${NGROK_AUTH}
+      NGROK_SUBDOMAIN: "tailwindcomponents"
+      NGROK_PROTOCOL: "tcp"
+      NGROK_PORT: app:80
+    ports:
+      - "9003:4040"
+    networks:
+     - sdnet
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      environment:
+       - PMA_ARBITRARY=1
+       - PMA_HOST=mysql
+       - PMA_USER=${DB_USERNAME}
+       - PMA_PASSWORD=${DB_PASSWORD}
+      restart: always
+      ports:
+       - "9004:80"
+      volumes:
+       - phpmyadmindatav2:/sessions
+      networks:
+       - sdnet
+networks:
+  sdnet:
+    driver: "bridge"
+volumes:
+  mysqldata:
+    driver: "local"
+  redisdata:
+    driver: "local"
+  phpmyadmindatav2:
+    driver: "local"
