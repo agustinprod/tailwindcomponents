@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Component;
+use App\Mail\ComponentSubmittedMail;
 use App\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -63,6 +64,19 @@ class StoresOneComponentTest extends TestCase
             'author_type' => User::class,
             'author_id' => $user->id,
         ]);
+    }
+
+    public function test_it_fires_an_email()
+    {
+        \Mail::fake();
+
+        $this->postJson('/api/components', $this->validComponentData());
+
+        \Mail::assertSent(ComponentSubmittedMail::class, function($mail) {
+            $mail->hasTo(config('mail.notifications'));
+
+            return $mail;
+        });
     }
 
     /**

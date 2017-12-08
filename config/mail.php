@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'notifications' => env('MAIL_NOTIFICATIONS', 'email@example.com'),
 
     /*
     |--------------------------------------------------------------------------

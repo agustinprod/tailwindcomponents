@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Events\ComponentCreated;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
@@ -21,6 +22,9 @@ class Component extends Model
     use HasSlug, HasTags;
 
     protected $guarded = [];
+    protected $dispatchesEvents = [
+        'created' => ComponentCreated::class
+    ];
 
     public function author()
     {
